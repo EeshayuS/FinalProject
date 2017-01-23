@@ -8,13 +8,13 @@ import java.util.Scanner;
 
 public class NetworkUtils {
 
-    private static final String URL = "api.icndb.com/jokes/random";
+    private static final String LINK = "api.icndb.com/jokes/random";
 
     public static String buildJokeUrl() {
         URL url;
         String response;
         try {
-            url = new URL(URL);
+            url = new URL(LINK);
             response = getResponseFromHttpUrl(url);
             return response;
         } catch (IOException e) {

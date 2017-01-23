@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-    public class FetchMovieTask extends AsyncTask<String, Void, String> {
+    public class FetchJokeTask extends AsyncTask<String, Void, String> {
 
         @Override
         protected void onPreExecute() {
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void tellJoke(View view) {
-        new FetchMovieTask().execute();
+        new FetchJokeTask().execute();
         Toast.makeText(this, response, Toast.LENGTH_SHORT).show();
     }
 
