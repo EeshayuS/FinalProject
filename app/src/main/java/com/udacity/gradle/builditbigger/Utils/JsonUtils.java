@@ -7,14 +7,15 @@ public final class JsonUtils {
 
     private static final String JSON_JOKE_PATH = "joke";
 
-    public static String getJokeFromJson(String jokeJsonString)
-            throws JSONException {
+    public static String getJokeFromJson(String jokeJsonString) throws JSONException {
 
         String joke;
 
         JSONObject jokeJson = new JSONObject(jokeJsonString);
 
-        joke = jokeJson.getString(JSON_JOKE_PATH);
+        JSONObject joke2 = jokeJson.getJSONObject("value");
+
+        joke = joke2.getString(JSON_JOKE_PATH);
 
         return joke;
 

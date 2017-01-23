@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 public class NetworkUtils {
 
-    private static final String LINK = "api.icndb.com/jokes/random";
+    private static final String LINK = "https://api.icndb.com/jokes/random";
 
     public static String buildJokeUrl() {
         URL url;

@@ -1,7 +1,10 @@
 package com.udacity.gradle.builditbigger;
 
-import android.os.AsyncTask;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,9 +15,10 @@ import com.udacity.gradle.builditbigger.Utils.JsonUtils;
 import com.udacity.gradle.builditbigger.Utils.NetworkUtils;
 
 
-public class MainActivity extends AppCompatActivity {
 
-    String response;
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks{
+
+    private static Toast toast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,15 +26,30 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-    public class FetchJokeTask extends AsyncTask<String, Void, String> {
+    @Override
+    public Loader onCreateLoader(int id, Bundle args) {
+        return new FetchJokeTask(this);
+    }
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
+    @Override
+    public void onLoadFinished(Loader loader, Object data) {
+        toast = Toast.makeText(MainActivity.this, String.valueOf(data), Toast.LENGTH_LONG);
+        toast.show();
+    }
+
+    @Override
+    public void onLoaderReset(Loader loader) {
+
+    }
+
+    static class FetchJokeTask extends AsyncTaskLoader<String> {
+
+        private FetchJokeTask(Context context) {
+            super(context);
         }
 
         @Override
-        protected String doInBackground(String... params) {
+        public String loadInBackground() {
 
             String joke;
 
@@ -47,40 +66,26 @@ public class MainActivity extends AppCompatActivity {
             }
             return joke;
         }
-
-        @Override
-        protected void onPostExecute(String movieData) {
-            response = movieData;
-        }
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        return id == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
     public void tellJoke(View view) {
-        new FetchJokeTask().execute();
-        Toast.makeText(this, response, Toast.LENGTH_SHORT).show();
+        if (toast != null) toast.cancel();
+        Loader loader = getSupportLoaderManager().initLoader(0, null, this);
+        loader.forceLoad();
     }
-
 
 }
