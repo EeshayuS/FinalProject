@@ -34,9 +34,7 @@ public class MyEndpoint {
     public MyBean getJoke() {
         MyBean joke = new MyBean();
 
-        String jsonJokeResponse = NetworkUtils.buildJokeUrl();
-
-        joke.setData(jsonJokeResponse);
+        joke.setData(NetworkUtils.buildJokeUrl());
 
         return joke;
     }
