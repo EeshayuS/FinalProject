@@ -1,4 +1,4 @@
-package com.udacity.gradle.builditbigger.Utils;
+package com.example;
 
 import java.io.IOException;
 import java.io.InputStream;

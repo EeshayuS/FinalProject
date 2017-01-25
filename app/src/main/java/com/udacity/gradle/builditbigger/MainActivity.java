@@ -1,24 +1,36 @@
 package com.udacity.gradle.builditbigger;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.NetworkUtils;
+import com.example.eeshayu.myapplication.backend.myApi.MyApi;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
+import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.udacity.gradle.builditbigger.Utils.JsonUtils;
-import com.udacity.gradle.builditbigger.Utils.NetworkUtils;
+
+import java.io.IOException;
 
 
-
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks{
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks {
 
     private static Toast toast;
+    Loader loader;
+    CountDownTimer toastCountDown;
+    boolean init = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,13 +45,30 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader loader, Object data) {
-        toast = Toast.makeText(MainActivity.this, String.valueOf(data), Toast.LENGTH_LONG);
-        toast.show();
+        String joke = String.valueOf(data).replace("&quot;", "\"");
+        showToast(joke);
     }
 
     @Override
     public void onLoaderReset(Loader loader) {
 
+    }
+
+    private void showToast(String joke) {
+        int toastDurationInMilliSeconds = joke.length() * 40;
+
+        toast = Toast.makeText(this, joke, Toast.LENGTH_LONG);
+        toastCountDown = new CountDownTimer(toastDurationInMilliSeconds, 1000) {
+            public void onTick(long millisUntilFinished) {
+                toast.show();
+            }
+            public void onFinish() {
+                toast.cancel();
+            }
+        };
+
+        toast.show();
+        toastCountDown.start();
     }
 
     static class FetchJokeTask extends AsyncTaskLoader<String> {
@@ -83,9 +112,48 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     public void tellJoke(View view) {
-        if (toast != null) toast.cancel();
-        Loader loader = getSupportLoaderManager().initLoader(0, null, this);
-        loader.forceLoad();
+        //if (toast != null) toast.cancel();
+        //if (loader != null) loader.reset();
+        //loader = getSupportLoaderManager().initLoader(0, null, this);
+        //loader.forceLoad();
+        new EndpointsAsyncTask().execute();
+    }
+
+    class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> {
+        private MyApi myApiService = null;
+        private Context context = MainActivity.this;
+
+        @Override
+        protected String doInBackground(Pair<Context, String>... params) {
+            if(myApiService == null) {  // Only do this once
+                MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(),
+                        new AndroidJsonFactory(), null)
+                        // options for running against local devappserver
+                        // - 10.0.2.2 is localhost's IP address in Android emulator
+                        // - turn off compression when running against local devappserver
+                        .setRootUrl("http://10.0.2.2:8080/_ah/api/")
+                        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
+                            @Override
+                            public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
+                                abstractGoogleClientRequest.setDisableGZipContent(true);
+                            }
+                        });
+                // end options for devappserver
+
+                myApiService = builder.build();
+            }
+
+            try {
+                return myApiService.myApi().execute().getData();
+            } catch (IOException e) {
+                return e.getMessage();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            Toast.makeText(context, result, Toast.LENGTH_LONG).show();
+        }
     }
 
 }
