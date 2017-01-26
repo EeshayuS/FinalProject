@@ -31,7 +31,7 @@ public class MyEndpoint {
      * A simple endpoint method that takes a name and says Hi back
      */
     @ApiMethod(name = "myApi")
-    public MyBean getJoke() {
+    public MyBean myApi() {
         MyBean joke = new MyBean();
 
         joke.setData(NetworkUtils.buildJokeUrl());

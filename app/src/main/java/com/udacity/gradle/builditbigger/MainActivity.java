@@ -9,6 +9,7 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -150,11 +151,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         @Override
         protected void onPostExecute(String result) {
-            jsonJokeResponse = result;
-            if (toast != null) toast.cancel();
-            if (loader != null) loader.reset();
-            loader = getSupportLoaderManager().initLoader(0, null, MainActivity.this);
-            loader.forceLoad();
+            toast = Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG);
+            toast.show();
+            // jsonJokeResponse = result;
+            // if (toast != null) toast.cancel();
+            // if (loader != null) loader.reset();
+            // loader = getSupportLoaderManager().initLoader(0, null, MainActivity.this);
+            // loader.forceLoad();
         }
     }
 }
