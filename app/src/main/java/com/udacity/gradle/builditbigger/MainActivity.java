@@ -3,35 +3,26 @@ package com.udacity.gradle.builditbigger;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.AsyncTaskLoader;
-import android.support.v4.content.Loader;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.example.NetworkUtils;
 import com.example.eeshayu.myapplication.backend.myApi.MyApi;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
-import com.udacity.gradle.builditbigger.Utils.JsonUtils;
 
 import java.io.IOException;
 
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks {
+public class MainActivity extends AppCompatActivity {
 
-    private static Toast toast;
-    CountDownTimer toastCountDown;
-    Loader loader;
-    static String jsonJokeResponse;
+    static String joke;
+    Toast toast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,68 +31,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     public void tellJoke(View view) {
+        if (toast != null) toast.cancel();
         new EndpointsAsyncTask().execute();
-    }
-
-
-    private void showToast(String joke) {
-        int toastDurationInMilliSeconds = joke.length() * 40;
-
-        toast = Toast.makeText(this, joke, Toast.LENGTH_LONG);
-        toastCountDown = new CountDownTimer(toastDurationInMilliSeconds, 1000) {
-            public void onTick(long millisUntilFinished) {
-                toast.show();
-            }
-
-            public void onFinish() {
-                toast.cancel();
-            }
-        };
-
-        toast.show();
-        toastCountDown.start();
-    }
-
-
-    @Override
-    public Loader onCreateLoader(int id, Bundle args) {
-        return new FetchJokeTask(this);
-    }
-
-    @Override
-    public void onLoadFinished(Loader loader, Object data) {
-        String joke = String.valueOf(data).replace("&quot;", "\"");
-        showToast(joke);
-    }
-
-    @Override
-    public void onLoaderReset(Loader loader) {
-
-    }
-
-
-    static class FetchJokeTask extends AsyncTaskLoader<String> {
-
-        private FetchJokeTask(Context context) {
-            super(context);
-        }
-
-        @Override
-        public String loadInBackground() {
-
-            String joke;
-
-            try {
-
-                joke = JsonUtils.getJokeFromJson(jsonJokeResponse);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-
-            }
-            return joke;
-        }
     }
 
 
@@ -142,7 +73,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
 
             try {
-                return myApiService.myApi().execute().getData();
+                joke = myApiService.myApi().execute().getData();
+                return joke;
             } catch (IOException e) {
                 return e.getMessage();
             }
@@ -153,11 +85,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         protected void onPostExecute(String result) {
             toast = Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG);
             toast.show();
-            // jsonJokeResponse = result;
-            // if (toast != null) toast.cancel();
-            // if (loader != null) loader.reset();
-            // loader = getSupportLoaderManager().initLoader(0, null, MainActivity.this);
-            // loader.forceLoad();
         }
     }
 }

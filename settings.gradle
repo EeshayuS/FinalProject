@@ -1,1 +1,1 @@
-include ':app', ':uilib', ':networklib', ':backend'
+include ':app', ':uilib', ':backend', ':jokes'

@@ -6,12 +6,10 @@
 
 package com.example.Eeshayu.myapplication.backend;
 
-import com.example.NetworkUtils;
+import com.example.jokes;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
-
-import javax.inject.Named;
 
 /**
  * An endpoint class we are exposing
@@ -34,7 +32,7 @@ public class MyEndpoint {
     public MyBean myApi() {
         MyBean joke = new MyBean();
 
-        joke.setData(NetworkUtils.buildJokeUrl());
+        joke.setData(jokes.getJoke());
 
         return joke;
     }
