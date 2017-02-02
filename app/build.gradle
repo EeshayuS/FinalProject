@@ -19,6 +19,12 @@ android {
         }
     }
 
+    android {
+        defaultConfig {
+            testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        }
+    }
+
     productFlavors {
         free {
             applicationId "com.udacity.gradle.builditbigger.free"
@@ -33,9 +39,9 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':uilib')
     compile project(':jokes')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
+    androidTestCompile 'com.android.support:support-annotations:25.1.0'
+    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile 'com.android.support.test:rules:0.5'
 
     compile 'com.android.support:appcompat-v7:25.1.0'
     freeCompile 'com.google.android.gms:play-services-ads:10.0.1'

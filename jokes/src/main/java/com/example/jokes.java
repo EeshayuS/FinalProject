@@ -15,4 +15,8 @@ public class jokes {
         joke.add("KNACK ladies and gentlemen, KNACK");
         return joke.get(random.nextInt(joke.size()));
     }
+
+    public static ArrayList<String> getAllJokes() {
+        return joke;
+    }
 }

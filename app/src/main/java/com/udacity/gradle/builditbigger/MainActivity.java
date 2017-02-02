@@ -21,7 +21,7 @@ import com.noobilator7.uilib.JokeActivity;
 import java.io.IOException;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnTaskCompleted{
 
     Toast toast;
 
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void tellJoke(View view) {
         if (toast != null) toast.cancel();
-        new EndpointsAsyncTask().execute();
+        new EndpointsAsyncTask(this).execute();
     }
 
 
@@ -50,7 +50,13 @@ public class MainActivity extends AppCompatActivity {
         return id == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
-    class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> {
+    static class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> {
+        private OnTaskCompleted listener;
+
+        public EndpointsAsyncTask(OnTaskCompleted listener) {
+            this.listener = listener;
+        }
+
         private MyApi myApiService = null;
 
         @Override
@@ -83,11 +89,17 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            Intent intent = new Intent(MainActivity.this, JokeActivity.class);
-            intent.putExtra("joke", result);
-            startActivity(intent);
+            listener.onTaskCompleted(result);
         }
     }
+
+    @Override
+    public void onTaskCompleted(String result) {
+        Intent intent = new Intent(MainActivity.this, JokeActivity.class);
+        intent.putExtra("joke", result);
+        startActivity(intent);
+    }
+
 }
 
 
