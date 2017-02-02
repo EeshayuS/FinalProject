@@ -1,6 +1,7 @@
 package com.udacity.gradle.builditbigger;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.util.Pair;
@@ -15,13 +16,13 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+import com.noobilator7.uilib.JokeActivity;
 
 import java.io.IOException;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    static String joke;
     Toast toast;
 
     @Override
@@ -73,8 +74,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             try {
-                joke = myApiService.myApi().execute().getData();
-                return joke;
+                return myApiService.myApi().execute().getData();
             } catch (IOException e) {
                 return e.getMessage();
             }
@@ -83,8 +83,9 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            toast = Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG);
-            toast.show();
+            Intent intent = new Intent(MainActivity.this, JokeActivity.class);
+            intent.putExtra("joke", result);
+            startActivity(intent);
         }
     }
 }
